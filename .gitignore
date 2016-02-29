@@ -5,3 +5,5 @@
 
 env/
 .idea/
+
+jrc_auth/settings/local.py

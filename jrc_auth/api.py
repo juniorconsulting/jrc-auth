@@ -1,4 +1,4 @@
-from uuid import uuid4, UUID
+from uuid import uuid4
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -41,12 +41,12 @@ def login(request, format=None):
     user = authenticate(username=username, password=password)
     if user is not None:
         token_str = r.get(str(user.id))
-        if token_str is None:
-            token = uuid4()
-            r.set(str(user.id), str(token))
-            r.set(str(token), str(user.id))
-        else:
-            token = UUID(token_str)
+        if token_str:
+            r.delete((str(user.id), token_str))
+            r.delete(token_str, str(user.id))
+        token = uuid4()
+        r.set(str(user.id), str(token))
+        r.set(str(token), str(user.id))
         return Response({'token': token, 'userid': user.id})
     return Response("Invalid username/password.")
 

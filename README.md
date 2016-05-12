@@ -10,8 +10,18 @@ The API is implemented using [django-restframework](http://www.django-rest-frame
 ### Local setup
 
 * `git clone git@github.com:juniorconsulting/jrc-auth.git`
-* `cd jrc-auth && virtualenv env && pip install -r requirements.txt`
+* `cd jrc-auth && virtualenv env && source env/bin/activate && sudo pip install -r requirements.txt`
+* `cp jrc_auth/settings/example_local.py jrc_auth/settings/local.py`
+* Update `local.py`. If _postgres_ run:
+  * `psql`
+  * `CREATE DATABASE mydb`
+  * `CREATE USER myuser WITH PASSWORD 'password';`
+  * `GRANT ALL PRIVILEGES ON DATABASE mydb TO myuser;`
+  * `\q`
 * `python manage.py migrate`
+* `python manage.py createsuperuser`
+* Install [Redis](http://redis.io/topics/quickstart)
+* `redis-server`
 * `python manage.py runserver`
 
 ### Production environment

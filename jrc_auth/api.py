@@ -1,15 +1,16 @@
 from uuid import uuid4, UUID
-
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from rest_framework import routers, serializers, viewsets, permissions, status
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 import redis
 
+from jrc_auth.forms import JrCUserCreationForm
+
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
-# Serializers define the API representation.
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
@@ -24,8 +25,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """
-        Allow for someone unauthenticated to register, while restricting access to users other than themselves
-        for non-superusers.
+        Allow for someone unauthenticated to register, while
+        restricting access to users other than themselves for
+        non-superusers.
         """
         if self.request.user.is_superuser:
             return User.objects.all()
@@ -75,7 +77,11 @@ def logout(request, format=None):
     return Response("User logged out.")
 
 
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny,))
+def register(request, format=None):
+    form = JrCUserCreationForm(request.data)
+    if form.is_valid():
+        user = form.save()
+        return Response(str(user))
+    return Response(form.errors)

@@ -18,3 +18,11 @@ DATABASES = {
 }
 
 STATIC_ROOT = os.path.join(BASE_DIR, '../collected-static')
+
+# Email setup prod
+ANYMAIL = {
+    "MAILGUN_API_KEY": "<your Mailgun key>",
+}
+EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"  # or sendgrid.SendGridBackend, or...
+DEFAULT_FROM_EMAIL = "you@example.com"  # if you don't already have this in settings
+

@@ -1,7 +1,7 @@
 # jrc-auth
 
 Microservice managing everything related to user authentication for JrC.
-Implemented as a RESTful API served over HTTP(S).
+Implemented as an API served over HTTP(S).
 
 ## Setup
 

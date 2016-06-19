@@ -1,6 +1,7 @@
 from uuid import uuid4
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.shortcuts import render
 from rest_framework import serializers, viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ import redis
 from jrc_auth.forms import JrCUserCreationForm
 
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
+r_act = redis.StrictRedis(host='localhost', port=6379, db=1)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,7 +50,9 @@ def login(request, format=None):
             r.delete(token_str, str(user.id))
         token = uuid4()
         r.set(str(user.id), str(token))
+        r.expire(str(user.id), 86400 * 14)  # Expire in 14 days
         r.set(str(token), str(user.id))
+        r.expire(str(token), 86400 * 14)
         return Response({'token': token, 'userid': user.id})
     return Response("Invalid username/password.")
 
@@ -85,3 +89,15 @@ def register(request, format=None):
         user = form.save()
         return Response(str(user))
     return Response(form.errors)
+
+
+def activate(request, token=None):
+    email = r_act.get(token)
+    if email:
+        r_act.delete(email)
+        r_act.delete(token)
+        user = User.objects.get(email=email)
+        user.is_active = True
+        user.save()
+        return render(request, 'jrc_auth/success.html')
+    return render(request, 'jrc_auth/error.html')

@@ -25,7 +25,7 @@ def send_activation_email(user):
         body=txt,
         from_email="Junior Consulting AS <no-reply@mg.juniorconsulting.no",
         to=[user.email],
-        reply_to=["Junior Consultin AS - IT <it@juniorconsulting.no"]
+        reply_to=["Junior Consulting AS - IT <it@juniorconsulting.no"]
     )
     msg.tags = ["activation"]
     msg.send()

@@ -48,7 +48,9 @@ def login(request, format=None):
             r.delete(token_str, str(user.id))
         token = uuid4()
         r.set(str(user.id), str(token))
+        r.expire(str(user.id), 86400 * 14)  # Expire in 14 days
         r.set(str(token), str(user.id))
+        r.expire(str(token), 86400 * 14)
         return Response({'token': token, 'userid': user.id})
     return Response("Invalid username/password.")
 

@@ -94,8 +94,8 @@ def register(request, format=None):
 def activate(request, token=None):
     email = r_act.get(token)
     if email:
-        r.delete(email)
-        r.delete(token)
+        r_act.delete(email)
+        r_act.delete(token)
         user = User.objects.get(email=email)
         user.is_active = True
         user.save()

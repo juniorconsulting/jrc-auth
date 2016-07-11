@@ -54,7 +54,7 @@ def login(request, format=None):
         r.set(str(token), str(user.id))
         r.expire(str(token), 86400 * 14)
         return Response({'token': token, 'userid': user.id})
-    return Response("Invalid username/password.")
+    return Response({'message': "Invalid username/password."})
 
 
 @api_view(['POST'])
@@ -62,11 +62,11 @@ def login(request, format=None):
 def check_token(request, format=None):
     token_str = request.data.get('token', None)
     if token_str is None:
-        return Response("Token required.")
+        return Response({'message': "Token required."})
     userid = r.get(token_str)
     if userid:
         return Response({"userid": int(userid)})
-    return Response("Invalid token.")
+    return Response({'message': "Invalid token."})
 
 
 @api_view(['POST'])
@@ -74,11 +74,11 @@ def check_token(request, format=None):
 def logout(request, format=None):
     token_str = request.data.get('token', None)
     if token_str is None:
-        return Response("Token required.")
+        return Response({'message': "Token required."})
     if r.get(token_str):
         userid_str = r.get(token_str)
         r.delete(token_str, userid_str)
-    return Response("User logged out.")
+    return Response({'message': "User logged out."})
 
 
 @api_view(['POST'])
@@ -87,7 +87,7 @@ def register(request, format=None):
     form = JrCUserCreationForm(request.data)
     if form.is_valid():
         user = form.save()
-        return Response(str(user))
+        return Response({'username': str(user), 'userid': user.pk})
     return Response(form.errors)
 
 

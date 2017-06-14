@@ -1,5 +1,7 @@
 import os
 
+from datetime import timedelta
+
 from jrc_auth.settings.base import BASE_DIR
 
 
@@ -26,3 +28,6 @@ ANYMAIL = {
 EMAIL_BACKEND = "anymail.backends.mailgun.MailgunBackend"  # or sendgrid.SendGridBackend, or...
 DEFAULT_FROM_EMAIL = "you@example.com"  # if you don't already have this in settings
 
+EXPIRATION_TIME = timedelta(hours=1) # Must be timedelta object
+SECRET_SEPARATOR = "<delimiter char>"
+JWT_SECRET = "<secret here>"
